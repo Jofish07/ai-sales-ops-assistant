@@ -4,3 +4,6 @@ __pycache__/
 .streamlit/secrets.toml
 *.egg-info/
 .DS_Store
+
+# 个人面试备查文档，不上 GitHub
+*_全解.md
