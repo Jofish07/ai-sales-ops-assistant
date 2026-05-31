@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from utils.data_processor import load_data, score_customers, get_summary
+from utils.data_processor import load_data, score_customers, get_summary, generate_insights
 
 # Plotly中文字体配置（防止图表显示方块）
 FONT_CN = dict(family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, Arial")
@@ -112,3 +112,112 @@ def color_tier(val):
 
 st.dataframe(display_df.style.applymap(color_tier, subset=["客户等级"]),
              use_container_width=True, height=500)
+
+# ─────────────────────────────────────────
+# AI销售运营洞察中心
+# ─────────────────────────────────────────
+
+st.markdown("---")
+st.markdown("#### AI销售运营洞察中心")
+st.caption("基于当前客户数据自动生成的运营洞察与行动建议，不调用大模型，使用规则引擎实时分析。")
+
+insights = generate_insights(df_scored)
+
+col_i1, col_i2 = st.columns([1, 1])
+
+with col_i1:
+    # 客户结构分析
+    with st.container():
+        st.markdown("**客户结构分析**")
+        s = insights["structure"]
+        st.markdown(
+            f"""
+            <div style="background:#F8FAFC; padding:12px; border-radius:6px; border-left:3px solid #1E3A8A; margin-bottom:8px;">
+                <p style="margin:0 0 4px 0; font-size:14px; color:#1E293B;">
+                    当前共 <strong>{s['total']}</strong> 个客户，
+                    A级 <strong>{s['tier']['A']['count']}</strong> 个（{s['tier']['A']['pct']}%），
+                    B级 <strong>{s['tier']['B']['count']}</strong> 个（{s['tier']['B']['pct']}%），
+                    C级 <strong>{s['tier']['C']['count']}</strong> 个（{s['tier']['C']['pct']}%）
+                </p>
+                <p style="margin:0; font-size:13px; color:#64748B;">
+                    {s['gmv_concentration']}；
+                    B级客户占比{s['tier']['B']['pct']}%，建议重点筛选有潜力的B级客户升级至A级
+                </p>
+            </div>
+            """, unsafe_allow_html=True,
+        )
+
+    # 行业分布分析
+    with st.container():
+        st.markdown("**行业分布分析**")
+        ind = insights["industry"]
+        top_lines = ""
+        for t in ind["top"]:
+            top_lines += f"<li>{t['industry']}：{t['gmv']:,.0f}万</li>"
+        st.markdown(
+            f"""
+            <div style="background:#F8FAFC; padding:12px; border-radius:6px; border-left:3px solid #3B82F6; margin-bottom:8px;">
+                <p style="margin:0 0 4px 0; font-size:14px; color:#1E293B;">Top 3 行业</p>
+                <ul style="margin:0 0 4px 0; font-size:13px; color:#475569;">
+                    {top_lines}
+                </ul>
+                <p style="margin:0; font-size:13px; color:#64748B;">{ind['concentration']}</p>
+            </div>
+            """, unsafe_allow_html=True,
+        )
+
+with col_i2:
+    # 商机遗漏分析
+    with st.container():
+        st.markdown("**商机遗漏分析**")
+        opps = insights["opportunities"]
+        if opps:
+            opp_html = ""
+            for o in opps:
+                color = "#DC2626" if o["priority"] == "高" else "#D97706"
+                label = "🔴" if o["priority"] == "高" else "🟡"
+                opp_html += f"""
+                <div style="background:#F8FAFC; padding:10px; border-radius:6px; border-left:3px solid {color}; margin-bottom:6px;">
+                    <p style="margin:0 0 2px 0; font-size:13px; color:#1E293B;">
+                        {label} <strong>{o['client']}</strong> — {o['detail']}
+                    </p>
+                </div>
+                """
+            st.markdown(opp_html, unsafe_allow_html=True)
+        else:
+            st.info("暂无商机遗漏")
+
+    # 客户流失风险分析
+    with st.container():
+        st.markdown("**客户流失风险分析**")
+        risks = insights["churn_risks"]
+        if risks:
+            risk_html = ""
+            for r in risks:
+                risk_html += f"""
+                <div style="background:#FFF7ED; padding:10px; border-radius:6px; border-left:3px solid #EA580C; margin-bottom:6px;">
+                    <p style="margin:0 0 2px 0; font-size:13px; color:#1E293B;">
+                        🟠 <strong>{r['client']}</strong> — {r['reason']}
+                    </p>
+                    <p style="margin:0; font-size:12px; color:#64748B;">建议：{r['action']}</p>
+                </div>
+                """
+            st.markdown(risk_html, unsafe_allow_html=True)
+        else:
+            st.info("暂未发现明显流失风险")
+
+# 本周行动建议
+st.markdown("---")
+st.markdown("**本周优先行动建议**")
+
+actions = insights["actions"]
+if actions:
+    cols = st.columns(len(actions))
+    for i, a in enumerate(actions):
+        with cols[i]:
+            if a["priority"] == "P0":
+                st.error(f"**{a['title']}**\n\n{a['detail']}")
+            else:
+                st.warning(f"**{a['title']}**\n\n{a['detail']}")
+else:
+    st.success("当前无待处理事项")
