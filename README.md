@@ -2,7 +2,10 @@
 
 > 面向B2B销售团队的销售运营决策平台 — 客户分层 · AI跟进 · 商机预警 · 运营洞察
 
-[//]: # "Streamlit App 部署链接"
+**一个销售运营决策工具。上传客户数据 → 自动分层评分 → 商机预警 → AI跟进建议 → 看板监控。覆盖从数据分析到行动建议的完整闭环。**
+
+[![Streamlit App](https://img.shields.io/badge/Streamlit-Live_Demo-FF4B4B?logo=streamlit&logoColor=white)](https://ai-sales-ops-assistant-nhihgfr9twrytdrmdatbbr.streamlit.app)
+[![GitHub](https://img.shields.io/badge/GitHub-Repo-181717?logo=github&logoColor=white)](https://github.com/Jofish07/ai-sales-ops-assistant)
 
 ---
 
@@ -110,6 +113,18 @@ streamlit run app.py
 
 ---
 
+## 项目截图
+
+| 首页 | 客户分析 |
+|:---:|:--------:|
+| ![首页](screenshots/01_首页.png) | ![客户分析](screenshots/02_客户分析.png) |
+
+| 跟进建议 | 销售看板 |
+|:-------:|:--------:|
+| ![跟进建议](screenshots/03_跟进建议.png) | ![销售看板](screenshots/04_销售看板.png) |
+
+---
+
 ## 目录结构
 
 ```
@@ -124,17 +139,9 @@ ai-sales-ops-assistant/
 │   └── ai_helper.py            # AI建议 / 规则引擎降级
 ├── data/
 │   └── demo_clients.csv        # 22条演示客户数据
+├── screenshots/                # 项目截图
 ├── .streamlit/
 │   └── config.toml             # 应用主题配置
 ├── requirements.txt
 └── README.md
 ```
-
----
-
-## 未来规划
-
-- **跟进记录持久化**：接入轻量数据库，跨会话保存跟进历史
-- **销售维度扩展**：增加 "销售→客户" 关联，支持团队协作视图
-- **预警阈值配置**：用户自定义商机预警和流失风险判定规则
-- **报告导出**：一键导出运营周报 PDF / Excel
