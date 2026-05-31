@@ -1,4 +1,4 @@
-"""客户分析 - 上传数据 + 自动分层"""
+"""客户分析 - 上传数据 + 自动分层 + 权重可调"""
 
 import streamlit as st
 import pandas as pd
@@ -17,7 +17,24 @@ uploaded = st.file_uploader("上传客户数据（CSV/Excel）", type=["csv", "x
 
 # 加载数据
 df = load_data(uploaded)
-df_scored = score_customers(df)
+
+# 权重调节器
+st.markdown("#### 评分权重配置")
+st.caption("调整各维度的权重，评分和客户等级会实时更新。不同公司对客户的定义不同：有的更看重采购额，有的更看重合作时长。")
+col_w1, col_w2, col_w3, col_w4 = st.columns(4)
+with col_w1:
+    w_purchase = st.slider("采购额权重", 0, 60, 40, 5, help="采购额越高，客户价值越大")
+with col_w2:
+    w_tenure = st.slider("合作时长权重", 0, 40, 20, 5, help="合作越久，客户越稳定")
+with col_w3:
+    w_followup = st.slider("跟进频率权重", 0, 40, 20, 5, help="跟进越勤，客户越活跃")
+with col_w4:
+    w_intent = st.slider("意向等级权重", 0, 40, 20, 5, help="意向越高，转化概率越大")
+
+weights = {"采购分": w_purchase, "时长分": w_tenure, "跟进分": w_followup, "意向分": w_intent}
+
+# 评分
+df_scored = score_customers(df, weights=weights)
 
 # 概览指标
 summary = get_summary(df_scored)
@@ -51,7 +68,33 @@ with col2:
 
 st.markdown("---")
 
+# 数据质量提示（脏数据场景）
+incomplete = df_scored[df_scored["数据完整度"] < 3]
+if len(incomplete) > 0:
+    st.warning(f"⚠️ 发现 {len(incomplete)} 条数据不完整的客户记录（缺失采购额、合作时长或跟进次数），评分可能偏低。建议补充完整数据后重新分析。")
+
+# 异常模式提示（面试时可展开讲）
+high_value_low_intent = df_scored[(df_scored["年采购额(万)"] > 500) & (df_scored["意向等级"] == "低")]
+high_intent_no_followup = df_scored[(df_scored["意向等级"] == "高") & (df_scored["跟进次数"] == 0)]
+churn_risk = df_scored[(df_scored["合作时长(月)"] > 24) & (df_scored["跟进次数"] < 3) & (df_scored["意向等级"] != "低")]
+
+if len(high_value_low_intent) > 0 or len(high_intent_no_followup) > 0 or len(churn_risk) > 0:
+    with st.expander("📊 数据异常模式检测（销售运营洞察）"):
+        if len(high_value_low_intent) > 0:
+            st.write("**🔴 高价值低意向客户（需高层介入）**")
+            for _, r in high_value_low_intent.iterrows():
+                st.write(f"- {r['客户名称']}：年采购额{r['年采购额(万)']:,.0f}万，但意向等级为低。建议安排高层对接，而非常规跟进。")
+        if len(high_intent_no_followup) > 0:
+            st.write("**🟡 高意向未跟进客户（潜在商机遗漏）**")
+            for _, r in high_intent_no_followup.iterrows():
+                st.write(f"- {r['客户名称']}：意向等级为高，但跟进次数为0。系统匹配度显示存在商机，建议立即安排首次接触。")
+        if len(churn_risk) > 0:
+            st.write("**🟠 老客户跟进减少（流失风险）**")
+            for _, r in churn_risk.iterrows():
+                st.write(f"- {r['客户名称']}：已合作{r['合作时长(月)']}个月，但近期跟进频率偏低。老客户流失往往不是突然的，而是被忽视的。")
+
 # 完整数据表
+st.markdown("---")
 st.subheader("客户明细（含评分）")
 show_cols = ["客户ID", "客户名称", "行业", "规模(人)", "年采购额(万)",
              "合作时长(月)", "跟进次数", "意向等级", "客户等级", "总分"]
