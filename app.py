@@ -7,7 +7,7 @@ st.set_page_config(page_title="AI销售运营助手", layout="wide")
 st.markdown("""
 <div style="text-align:center; padding:60px 0 30px;">
     <h1 style="font-size:36px; color:#1E3A8A; margin-bottom:8px;">AI销售运营助手</h1>
-    <p style="font-size:16px; color:#64748B;">用数据与AI辅助销售运营决策，让客户经验沉淀为可复用流程</p>
+    <p style="font-size:16px; color:#64748B;">帮助销售团队进行客户分析、商机识别、跟进决策支持的辅助工具</p>
 </div>
 """, unsafe_allow_html=True)
 
