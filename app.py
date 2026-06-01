@@ -34,8 +34,8 @@ st.markdown("""
 <div style="background:#FFF7ED; padding:24px; border-radius:8px; margin:24px 0; border:1px solid #FFEDD5;">
     <h3 style="color:#C24100; margin-bottom:8px; font-size:16px;">项目思考</h3>
     <p style="line-height:1.8; color:#6B4421;">
-    销售团队中，客户判断经验和跟进策略常分散在个人经验里——新人上手慢、人员流动时难以传承。
-    这个项目尝试用数据分析和AI，把客户分层和跟进判断的逻辑沉淀为可复用流程。
+    销售团队中，客户信息、跟进记录、沟通习惯往往分散在不同人员手中，客户价值判断和跟进策略常依赖个人经验。
+    这个项目尝试用数据分析和AI，将客户分层、商机识别、跟进优先级等分析逻辑沉淀为可复用流程。
     AI提供分析和参考，但理解客户、建立关系，最终还是人的事。
     </p>
 </div>
