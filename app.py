@@ -7,7 +7,7 @@ st.set_page_config(page_title="AI销售运营助手", layout="wide")
 st.markdown("""
 <div style="text-align:center; padding:60px 0 30px;">
     <h1 style="font-size:36px; color:#1E3A8A; margin-bottom:8px;">AI销售运营助手</h1>
-    <p style="font-size:16px; color:#64748B;">上传客户数据 → 智能分层 → AI跟进建议 → 销售看板</p>
+    <p style="font-size:16px; color:#64748B;">用数据与AI辅助销售运营决策，让客户经验沉淀为可复用流程</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -32,10 +32,11 @@ st.markdown("""
 
 st.markdown("""
 <div style="background:#FFF7ED; padding:24px; border-radius:8px; margin:24px 0; border:1px solid #FFEDD5;">
-    <h3 style="color:#C24100; margin-bottom:8px; font-size:16px;">销售运营场景</h3>
+    <h3 style="color:#C24100; margin-bottom:8px; font-size:16px;">项目思考</h3>
     <p style="line-height:1.8; color:#6B4421;">
-    销售运营日常需要同时跟进几十个企业客户，手动翻Excel做分层、写跟进方案、出汇总报表非常耗时。
-    这个工具用AI自动完成客户分层和跟进建议，让运营把时间花在真正重要的客户沟通上。
+    销售团队中，客户判断经验和跟进策略常分散在个人经验里——新人上手慢、人员流动时难以传承。
+    这个项目尝试用数据分析和AI，把客户分层和跟进判断的逻辑沉淀为可复用流程。
+    AI提供分析和参考，但理解客户、建立关系，最终还是人的事。
     </p>
 </div>
 """, unsafe_allow_html=True)
